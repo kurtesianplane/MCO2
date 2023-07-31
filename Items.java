@@ -10,6 +10,7 @@ public class Items {
         private String name;
         private double price;
         private int calories;
+        private boolean isIngredient;
 
         /**
          * Constructs a new Item object with the specified quantity, name, price, and calories.
@@ -17,8 +18,9 @@ public class Items {
          * @param name the name of the item
          * @param price the price of the item
          * @param calories the calories of the item
+         * @param isIngredient2
          */
-        public Item(int quantity, String name, double price, int calories) {
+        public Item(int quantity, String name, double price, int calories, boolean isIngredient2) {
             this.quantity = quantity;
             this.name = name;
             this.price = price;
@@ -71,6 +73,10 @@ public class Items {
          */
         public int getCalories() {
             return calories;
+        }
+
+        public boolean isIngredient() {
+            return isIngredient;
         }
     }
 

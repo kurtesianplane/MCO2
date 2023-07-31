@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.*;
 
 public class VendingMachineMaintenance {
@@ -8,8 +11,7 @@ public class VendingMachineMaintenance {
     }
 
     public void restockItem(JFrame frame) {
-        // prompt user to select item using buttons
-        Object[] options = new Object[vendingMachine.itemSlots.length];
+        Object[] options = new Object[vendingMachine.itemSlots.length + 1];
         for (int i = 0; i < vendingMachine.itemSlots.length; i++) {
             Items.ItemSlot slot = vendingMachine.itemSlots[i];
             Items.Item item = slot.getItem();
@@ -19,6 +21,7 @@ public class VendingMachineMaintenance {
                 options[i] = "Empty";
             }
         }
+        options[vendingMachine.itemSlots.length] = "Restock All";
         int slotIndex = JOptionPane.showOptionDialog(frame,
             "Select item:",
             "Vending Machine",
@@ -27,17 +30,27 @@ public class VendingMachineMaintenance {
             null,
             options,
             options[0]);
-    
-        String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
-        int quantity = Integer.parseInt(quantityStr);
-    
-        if (slotIndex >= 0 && slotIndex < vendingMachine.itemSlots.length) {
+        
+        if (slotIndex == vendingMachine.itemSlots.length) {
+            String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
+            int quantity = Integer.parseInt(quantityStr);
+            
+            for (int i = 0; i < vendingMachine.itemSlots.length; i++) {
+                Items.ItemSlot slot = vendingMachine.itemSlots[i];
+                Items.Item item = slot.getItem();
+                if (item != null) {
+                    item.setQuantity(quantity);
+                }
+            }
+        } else if (slotIndex >= 0 && slotIndex < vendingMachine.itemSlots.length) {
             Items.ItemSlot slot = vendingMachine.itemSlots[slotIndex];
             Items.Item item = slot.getItem();
-    
+            
             if (item != null) {
+                String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
+                int quantity = Integer.parseInt(quantityStr);
+                
                 item.setQuantity(quantity);
-                JOptionPane.showMessageDialog(frame, item.getName() + " restocked to " + quantity);
             } else {
                 JOptionPane.showMessageDialog(frame, "Slot " + slotIndex + " is empty.");
             }
@@ -86,9 +99,51 @@ public class VendingMachineMaintenance {
     }
     
     public void replenishCash(JFrame frame) {
-        String amountStr = JOptionPane.showInputDialog(frame, "Enter amount: ");
-        double amount = Double.parseDouble(amountStr);
-        vendingMachine.moneyTotal += amount;
-        JOptionPane.showMessageDialog(frame, "Cash replenished to " + vendingMachine.moneyTotal);
+        List<Integer> chosenDenominations = new ArrayList<>();
+        while (true) {
+            // create options array from VendingMachine.DENOMINATIONS
+            Object[] options = new Object[VendingMachine.DENOMINATIONS.length + 2];
+            for (int i = 0; i < VendingMachine.DENOMINATIONS.length; i++) {
+                options[i] = VendingMachine.DENOMINATIONS[i];
+            }
+            options[VendingMachine.DENOMINATIONS.length] = "Replenish All";
+            options[VendingMachine.DENOMINATIONS.length + 1] = "Done";
+            
+            // prompt user to select denomination using buttons
+            int choice = JOptionPane.showOptionDialog(frame,
+                "Select a denomination:",
+                "Vending Machine",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+            
+            if (choice == VendingMachine.DENOMINATIONS.length + 1) {
+                break;
+            } else if (choice == VendingMachine.DENOMINATIONS.length) {
+                String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
+                int quantity = Integer.parseInt(quantityStr);
+                
+                for (int i = 0; i < VendingMachine.DENOMINATIONS.length; i++) {
+                    vendingMachine.changeDenominations[i] += quantity;
+                }
+            } else {
+                int denominationIndex = choice;
+                String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
+                int quantity = Integer.parseInt(quantityStr);
+                
+                vendingMachine.changeDenominations[denominationIndex] += quantity;
+            }
+        }
+        
+        // display replenished denominations
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>Replenished denominations:<br>");
+        for (int i = 0; i < VendingMachine.DENOMINATIONS.length; i++) {
+            sb.append(VendingMachine.DENOMINATIONS[i] + ": " + vendingMachine.changeDenominations[i] + "<br>");
+        }
+        sb.append("</html>");
+        JOptionPane.showMessageDialog(frame, sb.toString());
     }    
 }
