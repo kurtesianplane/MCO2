@@ -6,25 +6,31 @@ public class Items {
      * This class represents an item that can be stored in a vending machine.
      */
     public static class Item {
+        public enum ItemType { MILK_TEA, STANDALONE_INGREDIENT, ADDON_INGREDIENT }
+
         private int quantity;
         private String name;
         private double price;
         private int calories;
         private boolean isIngredient;
+        private ItemType itemType;
 
         /**
-         * Constructs a new Item object with the specified quantity, name, price, and calories.
+         * Constructs a new Item object with the specified quantity, name, price, calories, and item type.
          * @param quantity the quantity of the item
          * @param name the name of the item
          * @param price the price of the item
          * @param calories the calories of the item
-         * @param isIngredient2
+         * @param isIngredient whether or not the item is an ingredient
+         * @param itemType the type of the item (milk tea, standalone ingredient, or add-on ingredient)
          */
-        public Item(int quantity, String name, double price, int calories, boolean isIngredient2) {
+        public Item(int quantity, String name, double price, int calories, boolean isIngredient, ItemType itemType) {
             this.quantity = quantity;
             this.name = name;
             this.price = price;
             this.calories = calories;
+            this.isIngredient = isIngredient;
+            this.itemType = itemType;
         }
 
         /**
@@ -75,12 +81,24 @@ public class Items {
             return calories;
         }
 
+        /**
+         * Returns whether or not this item is an ingredient.
+         * @return true if this item is an ingredient, false otherwise
+         */
         public boolean isIngredient() {
             return isIngredient;
         }
+
+        /**
+         * Returns the type of this item (milk tea, standalone ingredient, or add-on ingredient).
+         * @return the type of this item
+         */
+        public ItemType getItemType() {
+            return itemType;
+        }
     }
 
-    /**
+        /**
      * This class represents a slot in a vending machine that can hold an item.
      */
     public static class ItemSlot {

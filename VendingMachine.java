@@ -19,7 +19,7 @@ public class VendingMachine {
         for (int i = 0; i < itemSlots.length; i++) {
             Items.ItemSlot slot = itemSlots[i];
             if (slot.getItem() == null) {
-                Items.Item item = new Items.Item(0, name, price, calories, false);
+                Items.Item item = new Items.Item(0, name, price, calories, false, Items.Item.ItemType.MILK_TEA);
                 slot.setItem(item);
                 break;
             }

@@ -150,25 +150,9 @@ public class Controller {
     private void testCustomProductFeatures() {
         if (model.getVendingMachine() instanceof SpecialVendingMachine) {
             SpecialVendingMachine specialVendingMachine = (SpecialVendingMachine) model.getVendingMachine();
-            boolean exit = false;
-            while (!exit) {
-                int choice = view.displayCustomProductFeaturesMenu();
-                switch (choice) {
-                    case 1:
-                        display.displayItems();
-                        break;
-                    case 2:
-                        specialVendingMachine.customizeItem(frame);
-                        break;
-                    case 3:
-                        exit = true;
-                        break;
-                    default:
-                        view.displayInvalidChoice();
-                }
-            }
+            specialVendingMachine.testCustomProductFeatures(frame);
         } else {
             view.displayInvalidChoice();
         }
-    }
+    }    
 }
