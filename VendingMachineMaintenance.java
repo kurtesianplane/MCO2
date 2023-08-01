@@ -11,7 +11,8 @@ public class VendingMachineMaintenance {
     }
 
     public void restockItem(JFrame frame) {
-        Object[] options = new Object[vendingMachine.itemSlots.length + 1];
+        // prompt user to select item using buttons
+        Object[] options = new Object[vendingMachine.itemSlots.length];
         for (int i = 0; i < vendingMachine.itemSlots.length; i++) {
             Items.ItemSlot slot = vendingMachine.itemSlots[i];
             Items.Item item = slot.getItem();
@@ -21,7 +22,6 @@ public class VendingMachineMaintenance {
                 options[i] = "Empty";
             }
         }
-        options[vendingMachine.itemSlots.length] = "Restock All";
         int slotIndex = JOptionPane.showOptionDialog(frame,
             "Select item:",
             "Vending Machine",
@@ -30,32 +30,37 @@ public class VendingMachineMaintenance {
             null,
             options,
             options[0]);
-        
-        if (slotIndex == vendingMachine.itemSlots.length) {
-            String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
-            int quantity = Integer.parseInt(quantityStr);
-            
-            for (int i = 0; i < vendingMachine.itemSlots.length; i++) {
-                Items.ItemSlot slot = vendingMachine.itemSlots[i];
-                Items.Item item = slot.getItem();
-                if (item != null) {
-                    item.setQuantity(quantity);
-                }
+    
+        Items.ItemSlot slot = vendingMachine.itemSlots[slotIndex];
+        Items.Item item = slot.getItem();
+    
+        if (item != null) {
+            // create options array for selecting quantity
+            Object[] quantityOptions = new Object[11];
+            for (int i = 0; i <= 10; i++) {
+                quantityOptions[i] = i;
             }
-        } else if (slotIndex >= 0 && slotIndex < vendingMachine.itemSlots.length) {
-            Items.ItemSlot slot = vendingMachine.itemSlots[slotIndex];
-            Items.Item item = slot.getItem();
-            
-            if (item != null) {
-                String quantityStr = JOptionPane.showInputDialog(frame, "Enter quantity: ");
-                int quantity = Integer.parseInt(quantityStr);
-                
-                item.setQuantity(quantity);
+    
+            // prompt user to select quantity using buttons
+            int quantity = JOptionPane.showOptionDialog(frame,
+                "Select quantity:",
+                "Vending Machine",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                quantityOptions,
+                quantityOptions[0]);
+    
+            // check if selected quantity would cause total quantity to exceed 10
+            if (item.getQuantity() + quantity > 10) {
+                // display message and ask user to select new quantity
+                JOptionPane.showMessageDialog(frame, "Cannot restock more than 10 items per slot. Please select a new quantity.");
             } else {
-                JOptionPane.showMessageDialog(frame, "Slot " + slotIndex + " is empty.");
+                // restock item with selected quantity
+                item.setQuantity(quantity);
             }
         } else {
-            JOptionPane.showMessageDialog(frame, "Invalid slot index.");
+            JOptionPane.showMessageDialog(frame, "Slot " + slotIndex + " is empty.");
         }
     }    
 
@@ -79,22 +84,26 @@ public class VendingMachineMaintenance {
             null,
             options,
             options[0]);
-    
+
         String priceStr = JOptionPane.showInputDialog(frame, "Enter new price: ");
-        double price = Double.parseDouble(priceStr);
-    
-        if (slotIndex >= 0 && slotIndex < vendingMachine.itemSlots.length) {
-            Items.ItemSlot slot = vendingMachine.itemSlots[slotIndex];
-            Items.Item item = slot.getItem();
-    
-            if (item != null) {
-                item.setPrice(price);
-                JOptionPane.showMessageDialog(frame, item.getName() + " price set to " + price);
+        try {
+            double price = Double.parseDouble(priceStr);
+
+            if (slotIndex >= 0 && slotIndex < vendingMachine.itemSlots.length) {
+                Items.ItemSlot slot = vendingMachine.itemSlots[slotIndex];
+                Items.Item item = slot.getItem();
+
+                if (item != null) {
+                    item.setPrice(price);
+                    JOptionPane.showMessageDialog(frame, item.getName() + " price set to " + price);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Slot " + slotIndex + " is empty.");
+                }
             } else {
-                JOptionPane.showMessageDialog(frame, "Slot " + slotIndex + " is empty.");
+                JOptionPane.showMessageDialog(frame, "Invalid slot index.");
             }
-        } else {
-            JOptionPane.showMessageDialog(frame, "Invalid slot index.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, "Invalid price. Please enter a valid number.");
         }
     }
     
@@ -145,5 +154,22 @@ public class VendingMachineMaintenance {
         }
         sb.append("</html>");
         JOptionPane.showMessageDialog(frame, sb.toString());
-    }    
+    }   
+
+    public void displayTransactions() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>Vending Machine Transactions:<br>");
+        for (int i = 0; i < vendingMachine.itemSlots.length; i++) {
+            Items.ItemSlot slot = vendingMachine.itemSlots[i];
+            Items.Item item = slot.getItem();
+            if (item != null) {
+                int totalSold = slot.getTotalSold();
+                double totalSales = totalSold * item.getPrice();
+                sb.append(item.getName() + ": " + totalSold + " sold, " + totalSales + " earned<br>");
+            }
+        }
+        sb.append("Total earned: " + vendingMachine.moneyEarned);
+        sb.append("</html>");
+        JOptionPane.showMessageDialog(null, sb.toString());
+    }
 }

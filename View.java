@@ -66,9 +66,7 @@ public class View {
     }
 
     public int displayCustomProductFeaturesMenu() {
-        Object[] options = {"Display Customization Items",
-                            "Purchase Custom Product",
-                            "Exit"};
+        Object[] options = {"Display", "Purchase Custom Product", "Purchase Ingredient", "Exit"};
         int choice = JOptionPane.showOptionDialog(null,
             "Custom Product Features Test Menu:",
             "Vending Machine",
@@ -89,22 +87,20 @@ public class View {
     }
 
     public void displayItems(String items) {
-        JTextArea textArea = new JTextArea(items);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new java.awt.Dimension(300, 300));
-        JOptionPane.showMessageDialog(null, scrollPane, "Vending Machine Items", JOptionPane.INFORMATION_MESSAGE);
+        displayTextArea(items, "Vending Machine Items");
     }
-
+    
     public void displayPurchaseResult(String result) {
-        JTextArea textArea = new JTextArea(result);
+        displayTextArea(result, "Purchase Result");
+    }
+    
+    private void displayTextArea(String text, String title) {
+        JTextArea textArea = new JTextArea(text);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new java.awt.Dimension(300, 300));
-        JOptionPane.showMessageDialog(null, scrollPane, "Purchase Result", JOptionPane.INFORMATION_MESSAGE);
-    }
+        JOptionPane.showMessageDialog(null, scrollPane, title, JOptionPane.INFORMATION_MESSAGE);
+    }    
 }
