@@ -7,7 +7,7 @@ public class Items {
      */
     public static class Item {
         public enum ItemType { MILK_TEA, STANDALONE_INGREDIENT, ADDON_INGREDIENT }
-
+        private String imageFilename;
         private int quantity;
         private String name;
         private double price;
@@ -15,22 +15,25 @@ public class Items {
         private boolean isIngredient;
         private ItemType itemType;
 
+
         /**
-         * Constructs a new Item object with the specified quantity, name, price, calories, and item type.
+         * Constructs a new Item object with the specified quantity, name, price, calories, item type, and image filename.
          * @param quantity the quantity of the item
          * @param name the name of the item
          * @param price the price of the item
          * @param calories the calories of the item
          * @param isIngredient whether or not the item is an ingredient
          * @param itemType the type of the item (milk tea, standalone ingredient, or add-on ingredient)
+         * @param imageFilename the filename of the image for this item
          */
-        public Item(int quantity, String name, double price, int calories, boolean isIngredient, ItemType itemType) {
+        public Item(int quantity, String name, double price, int calories, boolean isIngredient, ItemType itemType, String imageFilename) {
             this.quantity = quantity;
             this.name = name;
             this.price = price;
             this.calories = calories;
             this.isIngredient = isIngredient;
             this.itemType = itemType;
+            this.imageFilename = imageFilename;
         }
 
         /**

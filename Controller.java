@@ -1,8 +1,13 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
+import java.util.Map;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
+/**
+ * Controller class that acts as an intermediary between the Model and View classes.
+ * It handles user interactions, creates and manages instances of vending machines,
+ * and provides methods to test vending machine features.
+ */
 public class Controller {
     private Model model;
     private View view;
@@ -11,6 +16,12 @@ public class Controller {
     private VendingMachinePurchase purchase;
     private VendingMachineMaintenance maintenance;
 
+    /**
+     * Constructs a new Controller with the provided Model and View instances.
+     *
+     * @param model The Model instance representing the underlying data and logic.
+     * @param view  The View instance responsible for user interface and interactions.
+     */
     public Controller(Model model, View view) {
         this.model = model;
         this.view = view;
@@ -20,6 +31,10 @@ public class Controller {
         this.maintenance = null;
     }
 
+    /**
+     * Runs the vending machine application and displays the main menu.
+     * It handles user choices, creates vending machines, and initiates testing if needed.
+     */
     public void run() {
         boolean exit = false;
         boolean showMenu = true;
@@ -45,6 +60,7 @@ public class Controller {
                     int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
                         exit = true;
+                        System.exit(0);
                     }
                     break;
                 default:
@@ -62,15 +78,26 @@ public class Controller {
         }
     }
 
+     /**
+     * Method to test the features of the vending machine.
+     * It allows users to test different functionalities of the vending machine.
+     */
     private void testVendingMachine() {
         if (model.getVendingMachine() == null) {
             view.displayNoVendingMachine();
-            return;
+            return; // added return statement to exit method and return to the main menu
         }
 
         boolean exit = false;
         while (!exit) {
-            int choice = view.displayTestMenu();
+            int choice;
+            boolean isSpecialVendingMachine = model.getVendingMachine() instanceof SpecialVendingMachine;
+            if (isSpecialVendingMachine) {
+                choice = view.displayTestMenu(true); // Pass true to indicate SpecialVendingMachine
+            } else {
+                choice = view.displayTestMenu(false); // Pass false to indicate Regular Vending Machine
+            }
+
             switch (choice) {
                 case 1:
                     testVendingFeatures();
@@ -79,21 +106,26 @@ public class Controller {
                     testMaintenanceFeatures();
                     break;
                 case 3:
-                    if (model.getVendingMachine() instanceof SpecialVendingMachine) {
+                    if (isSpecialVendingMachine) {
                         testCustomProductFeatures();
                     } else {
-                        view.displayInvalidChoice();
+                        exit = true;
                     }
                     break;
                 case 4:
                     exit = true;
-                    break;
+                    return;
                 default:
                     view.displayInvalidChoice();
             }
         }
     }
 
+    /**
+     * Creates a new Regular Vending Machine and sets up its initial products and displays.
+     * It also creates instances of VendingMachineDisplay, VendingMachinePurchase, and VendingMachineMaintenance
+     * to interact with the created vending machine.
+     */
     private void createRegularVendingMachine() {
         model.createRegularVendingMachine();
         VendingMachine vendingMachine = model.getVendingMachine();
@@ -101,9 +133,23 @@ public class Controller {
         display = new VendingMachineDisplay(model.getVendingMachine());
         purchase = new VendingMachinePurchase(model.getVendingMachine());
         maintenance = new VendingMachineMaintenance(model.getVendingMachine());
-        JOptionPane.showMessageDialog(frame, "A Regular Vending Machine has been created.");
+
+        // Customize the JOptionPane appearance for the message dialog
+        UIManager.put("OptionPane.background", new Color(255, 255, 230));
+        UIManager.put("Panel.background", new Color(255, 255, 230));
+        UIManager.put("Button.background", new Color(255, 204, 204));
+        UIManager.put("Button.font", new Font("Arial", Font.BOLD, 16));
+        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 16));
+
+        JOptionPane.showMessageDialog(frame, "A Regular Vending Machine has been created.", "Vending Machine", JOptionPane.INFORMATION_MESSAGE);
+        resetCustomUIManager();
     }
 
+    /**
+     * Creates a new Special Vending Machine and sets up its initial products and displays.
+     * It also creates instances of VendingMachineDisplay, VendingMachinePurchase, and VendingMachineMaintenance
+     * to interact with the created vending machine.
+     */
     private void createSpecialVendingMachine() {
         double initialCash = 0.0; // set initial cash balance
         model.createSpecialVendingMachine(initialCash);
@@ -112,9 +158,22 @@ public class Controller {
         display = new VendingMachineDisplay(model.getVendingMachine());
         purchase = new VendingMachinePurchase(model.getVendingMachine());
         maintenance = new VendingMachineMaintenance(model.getVendingMachine());
-        JOptionPane.showMessageDialog(frame, "A Special Vending Machine has been created.");
+
+        // Customize the JOptionPane appearance for the message dialog
+        UIManager.put("OptionPane.background", new Color(255, 255, 230));
+        UIManager.put("Panel.background", new Color(255, 255, 230));
+        UIManager.put("Button.background", new Color(255, 204, 204));
+        UIManager.put("Button.font", new Font("Arial", Font.BOLD, 16));
+        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 16));
+
+        JOptionPane.showMessageDialog(frame, "A Special Vending Machine has been created.", "Vending Machine", JOptionPane.INFORMATION_MESSAGE);
+        resetCustomUIManager();
     }
 
+     /**
+     * Tests the vending machine features, such as displaying available items and making purchases.
+     * It also allows users to exit or go back to the previous menu.
+     */
     private void testVendingFeatures() {
         boolean exit = false;
         while (!exit) {
@@ -135,10 +194,14 @@ public class Controller {
         }
     }
 
+    /**
+     * Tests the maintenance features of the vending machine, such as restocking items and setting prices.
+     * It also allows users to exit or go back to the previous menu.
+     */
     private void testMaintenanceFeatures() {
         boolean exit = false;
         while (!exit) {
-            int choice = view.displayMaintenanceFeaturesMenu();
+            int choice = view.displayMaintenanceFeaturesMenu(model.getVendingMachine() instanceof SpecialVendingMachine);
             switch (choice) {
                 case 1:
                     maintenance.restockItem(frame);
@@ -153,6 +216,14 @@ public class Controller {
                     maintenance.displayTransactions();
                     break;
                 case 5:
+                    if (model.getVendingMachine() instanceof SpecialVendingMachine) {
+                        maintenance.restockIngredients(frame);
+                        break;
+                    } else {
+                        exit = true;
+                        break;
+                    }
+                case 6:
                     exit = true;
                     break;
                 default:
@@ -161,190 +232,49 @@ public class Controller {
         }
     }
 
+    /**
+     * Tests the custom product features of the Special Vending Machine, such as creating and purchasing custom products.
+     * It also allows users to exit or go back to the previous menu.
+     */
     private void testCustomProductFeatures() {
-        boolean exit = false;
-        while (!exit) {
-            int choice = view.displayCustomProductFeaturesMenu();
-            switch (choice) {
-                case 1:
-                    displayCustomProduct();
-                    break;
-                case 2:
-                    purchaseCustomProduct();
-                    break;
-                case 3:
-                    purchaseIngredient();
-                    break;
-                case 4:
-                    exit = true;
-                    break;
-                default:
-                    view.displayInvalidChoice();
-            }
-        }
-    }
-
-    private void displayCustomProduct() {
         if (model.getVendingMachine() instanceof SpecialVendingMachine) {
             SpecialVendingMachine specialVendingMachine = (SpecialVendingMachine) model.getVendingMachine();
-            List<Items.Item> standaloneIngredients = specialVendingMachine.getStandaloneIngredients();
-            List<Items.Item> addonIngredients = specialVendingMachine.getAddonIngredients();
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("Standalone Ingredients:\n");
-            for (Items.Item item : standaloneIngredients) {
-                sb.append("- " + item.getName() + ": " + item.getPrice() + ", " + item.getCalories() + " calories\n");
-            }
-            sb.append("\nAdd-on Ingredients:\n");
-            for (Items.Item item : addonIngredients) {
-                sb.append("- " + item.getName() + ": " + item.getPrice() + ", " + item.getCalories() + " calories\n");
-            }
-
-            view.displayItems(sb.toString());
-        } else {
-            view.displayInvalidChoice();
-        }
-    }
-
-    private void purchaseCustomProduct() {
-        if (model.getVendingMachine() instanceof SpecialVendingMachine) {
-            SpecialVendingMachine specialVendingMachine = (SpecialVendingMachine) model.getVendingMachine();
-            List<Items.Item> standaloneIngredients = specialVendingMachine.getStandaloneIngredients();
-            List<Items.Item> addonIngredients = specialVendingMachine.getAddonIngredients();
-
-            // select base milk tea flavor
-            Object[] baseOptions = new Object[model.getVendingMachine().itemSlots.length];
-            for (int i = 0; i < model.getVendingMachine().itemSlots.length; i++) {
-                Items.ItemSlot slot = model.getVendingMachine().itemSlots[i];
-                Items.Item item = slot.getItem();
-                if (item != null) {
-                    baseOptions[i] = item.getName();
-                } else {
-                    baseOptions[i] = "Empty";
+            Map<String, ImageIcon> imageMap;
+            boolean exit = false;
+            while (!exit) {
+                int choice = view.displayCustomProductFeaturesMenu();
+                switch (choice) {
+                    case 1:
+                        specialVendingMachine.displayCustomProduct();
+                        break;
+                    case 2:
+                        specialVendingMachine.purchaseCustomProduct();
+                        break;
+                    case 3:
+                        specialVendingMachine.purchaseIngredient();
+                        break;
+                    case 4:
+                        exit = true;
+                        break;
+                    default:
+                        view.displayInvalidChoice();
                 }
-            }
-            int baseIndex = JOptionPane.showOptionDialog(null,
-                "Select base milk tea flavor:",
-                "Vending Machine",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                baseOptions,
-                baseOptions[0]);
-            Items.ItemSlot baseSlot = model.getVendingMachine().itemSlots[baseIndex];
-            Items.Item baseItem = baseSlot.getItem();
-            specialVendingMachine.chooseBase(baseItem);
-
-            // add add-ons
-            boolean exitAddons = false;
-            while (!exitAddons) {
-                Object[] addonOptions = new Object[addonIngredients.size() + 1];
-                for (int i = 0; i < addonIngredients.size(); i++) {
-                    Items.Item item = addonIngredients.get(i);
-                    addonOptions[i] = item.getName();
-                }
-                addonOptions[addonIngredients.size()] = "Done";
-                int addonIndex = JOptionPane.showOptionDialog(null,
-                    "Select add-on:",
-                    "Vending Machine",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    addonOptions,
-                    addonOptions[0]);
-                if (addonIndex == addonIngredients.size()) {
-                    exitAddons = true;
-                } else {
-                    Items.Item addonItem = addonIngredients.get(addonIndex);
-                    specialVendingMachine.chooseIngredient(addonItem);
-                }
-            }
-
-            // add standalone ingredients
-            boolean exitStandalone = false;
-            while (!exitStandalone) {
-                Object[] standaloneOptions = new Object[standaloneIngredients.size() + 1];
-                for (int i = 0; i < standaloneIngredients.size(); i++) {
-                    Items.Item item = standaloneIngredients.get(i);
-                    standaloneOptions[i] = item.getName();
-                }
-                standaloneOptions[standaloneIngredients.size()] = "Done";
-                int standaloneIndex = JOptionPane.showOptionDialog(null,
-                    "Select standalone ingredient:",
-                    "Vending Machine",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    standaloneOptions,
-                    standaloneOptions[0]);
-                if (standaloneIndex == standaloneIngredients.size()) {
-                    exitStandalone = true;
-                } else {
-                    Items.Item standaloneItem = standaloneIngredients.get(standaloneIndex);
-                    specialVendingMachine.chooseIngredient(standaloneItem);
-                }
-            }
-
-            // calculate price
-            double price = baseItem.getPrice();
-            for (Items.Item ingredient : specialVendingMachine.chosenIngredients) {
-                price += ingredient.getPrice();
-            }
-
-            // handle payment
-            double change = specialVendingMachine.handlePayment(frame, price);
-            if (change >= 0) {
-                // dispense item
-                specialVendingMachine.dispenseItem(frame, baseItem);
-
-                // finalize purchase
-                int calories = specialVendingMachine.calculateCalories();
-                String preparationSteps = specialVendingMachine.displayPreparationSteps();
-                String message = "<html>Custom Milk Tea:<br>" +
-                                 "- Base: " + baseItem.getName() + "<br>" +
-                                 "- Add-ons: ";
-                for (Items.Item ingredient : specialVendingMachine.chosenIngredients) {
-                    message += ingredient.getName() + ", ";
-                }
-                message += "<br>- Calories: " + calories + "<br>";
-                message += preparationSteps;
-                message += "</html>";
-                JOptionPane.showMessageDialog(null, message);
             }
         } else {
             view.displayInvalidChoice();
         }
-    }
+    }    
 
-    private void purchaseIngredient() {
-        if (model.getVendingMachine() instanceof SpecialVendingMachine) {
-            SpecialVendingMachine specialVendingMachine = (SpecialVendingMachine) model.getVendingMachine();
-            List<Items.Item> standaloneIngredients = specialVendingMachine.getStandaloneIngredients();
-
-            // select standalone ingredient
-            Object[] standaloneOptions = new Object[standaloneIngredients.size()];
-            for (int i = 0; i < standaloneIngredients.size(); i++) {
-                Items.Item item = standaloneIngredients.get(i);
-                standaloneOptions[i] = item.getName();
-            }
-            int standaloneIndex = JOptionPane.showOptionDialog(null,
-                "Select standalone ingredient:",
-                "Vending Machine",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                standaloneOptions,
-                standaloneOptions[0]);
-            Items.Item standaloneItem = standaloneIngredients.get(standaloneIndex);
-
-            // handle payment
-            double change = specialVendingMachine.handlePayment(frame, standaloneItem.getPrice());
-            if (change >= 0) {
-                // dispense item
-                specialVendingMachine.dispenseItem(frame, standaloneItem);
-            }
-        } else {
-            view.displayInvalidChoice();
-        }
+    /**
+     * Resets the custom UI manager settings to default values.
+     * It resets any customizations made to the UIManager for JOptionPane appearance.
+     */
+    private void resetCustomUIManager() {
+        // Reset any customizations made to the UIManager
+        UIManager.put("OptionPane.background", UIManager.get("OptionPane.background.default"));
+        UIManager.put("Panel.background", UIManager.get("Panel.background.default"));
+        UIManager.put("Button.background", UIManager.get("Button.background.default"));
+        UIManager.put("Button.font", UIManager.get("Button.font.default"));
+        UIManager.put("OptionPane.messageFont", UIManager.get("OptionPane.messageFont.default"));
     }
 }
