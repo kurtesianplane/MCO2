@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * The Model class represents a model for a Vending Machine application.
  * It manages the creation and retrieval of vending machines.
@@ -39,3 +40,24 @@ public class Model {
         vendingMachine = new SpecialVendingMachine(discount);
     }
 }
+=======
+public class Model {
+    private VendingMachine vendingMachine;
+
+    public Model() {
+        vendingMachine = null;
+    }
+
+    public VendingMachine getVendingMachine() {
+        return vendingMachine;
+    }
+
+    public void createRegularVendingMachine() {
+        vendingMachine = new VendingMachine();
+    }
+
+    public void createSpecialVendingMachine(double discount) {
+        vendingMachine = new SpecialVendingMachine(discount);
+    }
+}
+>>>>>>> b145b2538ff02a0f9884fd9e4fdacd0282577dfd

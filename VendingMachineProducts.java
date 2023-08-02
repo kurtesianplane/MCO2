@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * The VendingMachineProducts class provides a static method to add default products to a vending machine.
  * These products include various flavors of milk tea and their corresponding ingredients and addons.
@@ -52,3 +53,19 @@ public class VendingMachineProducts {
         }
     }
 }
+=======
+public class VendingMachineProducts {
+    public static void addDefaultProducts(VendingMachine vendingMachine) {
+        vendingMachine.addItem("Okinawa", 49, 410);
+        vendingMachine.addItem("Wintermelon", 59, 435);
+        vendingMachine.addItem("Hokkaido", 59, 455);
+        vendingMachine.addItem("Taro", 65, 455);
+        vendingMachine.addItem("Hazelnut", 79, 475);
+        vendingMachine.addItem("Salted Caramel", 89, 510);
+        vendingMachine.addItem("Double Dutch", 99, 510);
+        vendingMachine.addItem("Black Forest", 105, 565);
+        vendingMachine.addItem("Choco Java", 119, 585);
+        vendingMachine.addItem("Matcha Cookie", 119, 605);
+    }
+}
+>>>>>>> b145b2538ff02a0f9884fd9e4fdacd0282577dfd
